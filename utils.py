@@ -9,7 +9,7 @@ def historic_cdi(start: str = '01/07/1994', end: str = '01/07/2024') -> pd.Serie
     response = pd.read_json(api)
 
     cdi = response.set_index('data').squeeze()
-    cdi.index = pd.to_datetime(cdi.index, dayfirst=True)
+    cdi.index = pd.to_datetime(cdi.index, dayfirst=True).date
     
     cdi_returns = (1 + (cdi / 100)).cumprod()
 
