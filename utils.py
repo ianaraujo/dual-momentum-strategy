@@ -12,5 +12,6 @@ def historic_cdi(start: str = '01/07/1994', end: str = '01/07/2024') -> pd.Serie
     cdi.index = pd.to_datetime(cdi.index, dayfirst=True).date
     
     cdi_returns = (1 + (cdi / 100)).cumprod()
+    cdi_returns = (cdi_returns / cdi_returns.iloc[0])
 
     return cdi_returns
