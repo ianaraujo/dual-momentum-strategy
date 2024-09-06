@@ -1,10 +1,10 @@
 import pandas as pd
 
-def historic_cdi(start: str = '01/07/1994', end: str = '01/07/2024') -> pd.Series:
+def historic_cdi() -> pd.Series:
     """
     Baixa os dados históricos do Banco Central em relação ao rendimento do CDI. 
     """
-    api = f'https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial={start}&dataFinal={end}'
+    api = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json'
 
     response = pd.read_json(api)
 
@@ -12,6 +12,5 @@ def historic_cdi(start: str = '01/07/1994', end: str = '01/07/2024') -> pd.Serie
     cdi.index = pd.to_datetime(cdi.index, dayfirst=True).date
     
     cdi_returns = (1 + (cdi / 100)).cumprod()
-    cdi_returns = (cdi_returns / cdi_returns.iloc[0])
 
     return cdi_returns
