@@ -1,6 +1,7 @@
 import warnings
 import requests
 import pandas as pd
+import yfinance as yf
 
 from datetime import datetime
 from typing import Optional
@@ -76,6 +77,38 @@ def historic_imab5(start: Optional[str] = None, end: Optional[str] = None) -> pd
     return imab_normalized.squeeze()
 
 
+def historic_sp500(start: Optional[str] = None, end: Optional[str] = None, brl: bool = False) -> pd.Series:
+    
+    SP500 = yf.Ticker('^GSPC')
+
+    sp500_prices = SP500.history(start=STAR_DATE, end=END_DATE)['Close']
+    sp500_prices.index = pd.to_datetime(sp500_prices.index).date
+    
+    if brl:    
+        api = f"https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='{start}'&@dataFinalCotacao='{end}'&$format=json"
+
+        try:
+            response = requests.get(api)
+            response.raise_for_status()
+
+            data = response.json()
+    
+        except requests.HTTPError as e:
+            raise e
+
+        dolar = pd.DataFrame(data['value'])
+        dolar = dolar.set_index('dataHoraCotacao')
+
+        dolar.index = pd.to_datetime(dolar.index).date
+
+        sp500_dolar = dolar.join(sp500_prices.to_frame(), how='right')
+        
+        sp500_dolar['SP500 BRL'] = sp500_dolar['Close'] * sp500_dolar['cotacaoVenda'] 
+
+        return sp500_dolar['SP500 BRL'].squeeze()
+
+    return sp500_prices
+
 if __name__ == '__main__':
-    imab = historic_imab5()
-    print(imab)
+    sp500 = historic_sp500(start='01-01-2004', end='09-08-2024', brl=True)
+    print(sp500)
