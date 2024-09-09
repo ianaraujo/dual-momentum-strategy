@@ -81,10 +81,14 @@ def historic_sp500(start: Optional[str] = None, end: Optional[str] = None, brl: 
     
     SP500 = yf.Ticker('^GSPC')
 
-    sp500_prices = SP500.history(start=STAR_DATE, end=END_DATE)['Close']
+    sp500_prices = SP500.history(start=start, end=end)['Close']
     sp500_prices.index = pd.to_datetime(sp500_prices.index).date
-    
+
     if brl:    
+
+        start = datetime.strptime(start, '%Y-%m-%d').strftime('%m-%d-%Y')
+        end = datetime.strptime(end, '%Y-%m-%d').strftime('%m-%d-%Y')
+
         api = f"https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='{start}'&@dataFinalCotacao='{end}'&$format=json"
 
         try:
@@ -109,6 +113,7 @@ def historic_sp500(start: Optional[str] = None, end: Optional[str] = None, brl: 
 
     return sp500_prices
 
+
 if __name__ == '__main__':
-    sp500 = historic_sp500(start='01-01-2004', end='09-08-2024', brl=True)
+    sp500 = historic_sp500(start='2004-01-01', end='2024-09-09', brl=True)
     print(sp500)
