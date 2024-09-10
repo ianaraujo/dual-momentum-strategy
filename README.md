@@ -12,4 +12,4 @@ Estudo sobre a estratégia de Dual Momentum utilizando ativos brasileiros e estr
 - [X] Avaliação das estratégias
 - [ ] Como medir e diminuir a volatilidade de curto prazo? 
 - [ ] Revisar método de avaliação e geração de métricas
-- [ ] Normalizar séries temporais
+- [X] Normalizar séries temporais
